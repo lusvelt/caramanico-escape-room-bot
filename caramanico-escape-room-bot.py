@@ -61,12 +61,13 @@ class Group:
 
 
     async def forward_hint_request(self, message: Message):
-        if len(message.photo) > 0:
-            await application.bot.send_photo(self.supervisor_chat_id, message.photo[0])
-        elif message.voice:
-            await application.bot.send_voice(self.supervisor_chat_id, message.voice)
-        else:
-            await application.bot.send_message(self.supervisor_chat_id, message.text)
+        if self.supervisor_chat_id:
+            if len(message.photo) > 0:
+                await application.bot.send_photo(self.supervisor_chat_id, message.photo[0])
+            elif message.voice:
+                await application.bot.send_voice(self.supervisor_chat_id, message.voice)
+            else:
+                await application.bot.send_message(self.supervisor_chat_id, message.text)
         return PLAYING
 
 
@@ -196,7 +197,7 @@ async def enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def hint(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     group = groups[context.user_data['group_id']]
     await group.ask_for_hint()
-    update.message.reply_text('Ora puoi chiedere l\'indizio, scrivi un messaggio, manda un audio o una foto')
+    await update.message.reply_text('Ora puoi chiedere l\'indizio, scrivi un messaggio, manda un audio o una foto')
     return PLAYING
 
 
